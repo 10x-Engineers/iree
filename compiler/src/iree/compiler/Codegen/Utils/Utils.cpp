@@ -6,6 +6,7 @@
 
 #include "iree/compiler/Codegen/Utils/Utils.h"
 
+#include "iree/compiler/Codegen/LLVMCPU/Utils.h"
 #include "iree/compiler/Codegen/Dialect/Codegen/IR/IREECodegenAttrs.h"
 #include "iree/compiler/Codegen/Interfaces/ProcessorOpInterfaces.h"
 #include "iree/compiler/Codegen/Interfaces/UKernelOpInterface.h"
@@ -153,6 +154,11 @@ getDefaultEnabledUkernels(IREE::HAL::ExecutableTargetAttr targetAttr) {
     }
     return "mmt4d";
   }
+  if (isRISCV(targetAttr)) {
+    if (hasAnyVFeature(targetAttr)) {
+      return "mmt4d";
+    }
+  }
   return "none";
 }
 
@@ -246,6 +252,11 @@ bool isRISCV(IREE::HAL::ExecutableTargetAttr targetAttr) {
 bool isRISCV32(IREE::HAL::ExecutableTargetAttr targetAttr) {
   std::optional<llvm::Triple> triple = getTargetTriple(targetAttr);
   return triple && triple.value().isRISCV32();
+}
+
+bool isRISCV64(IREE::HAL::ExecutableTargetAttr targetAttr) {
+  std::optional<llvm::Triple> triple = getTargetTriple(targetAttr);
+  return triple && triple.value().isRISCV64();
 }
 
 bool isReadOnly(Value v) {

@@ -85,6 +85,23 @@ enumerateMatmulTileRiscv32(IREE::HAL::ExecutableTargetAttr target) {
   return {};
 }
 
+// Enumerate tile sizes to choose from on riscv64.
+// For narrow-{M,N} cases, this only enumerates on narrow M. The narrow-N cases
+// are handled by transposition in chooseMatmulTile.
+static SmallVector<TileMxNxK>
+enumerateMatmulTileRiscv64(IREE::HAL::ExecutableTargetAttr target) {
+  if (hasUkernel(target)) {
+    return {
+        TileMxNxK{1, 8, 1}, // Some reasonable tile shape.
+        TileMxNxK{2, 8, 1}, // Truncation of the above.
+        TileMxNxK{4, 8, 1}, // Truncation of the above.
+        TileMxNxK{8, 8, 1}, // Truncation of the above.
+    };
+  }
+  // Fallback - no architecture-optimized tile size for this case.
+  return {};
+}
+
 // Enumerate tile sizes to choose from on arm64.
 // For narrow-{M,N} cases, this only enumerates on narrow M. The narrow-N cases
 // are handled by transposition in chooseMatmulTile.
@@ -421,6 +438,9 @@ enumerateMatmulTileMxNxK(IREE::Encoding::EncodingAttr encoding,
   }
   if (isRISCV32(target)) {
     return enumerateMatmulTileRiscv32(target);
+  }
+  if (isRISCV64(target)) {
+    return enumerateMatmulTileRiscv64(target);
   }
   return {};
 }
