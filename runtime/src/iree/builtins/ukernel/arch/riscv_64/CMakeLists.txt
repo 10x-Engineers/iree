@@ -41,6 +41,8 @@ iree_bitcode_library(
     "mmt4d_riscv_64_tiles.inl"
   SRCS
     "mmt4d_riscv_64_base.c"
+  COPTS
+    "-march=rv64gcv"
 )
 
 iree_link_bitcode(

@@ -92,10 +92,10 @@ static SmallVector<TileMxNxK>
 enumerateMatmulTileRiscv64(IREE::HAL::ExecutableTargetAttr target) {
   if (hasUkernel(target)) {
     return {
-        TileMxNxK{1, 8, 1}, // Some reasonable tile shape.
-        TileMxNxK{2, 8, 1}, // Truncation of the above.
+        TileMxNxK{8, 8, 1}, // Some reasonable tile shape.
         TileMxNxK{4, 8, 1}, // Truncation of the above.
-        TileMxNxK{8, 8, 1}, // Truncation of the above.
+        TileMxNxK{2, 8, 1}, // Truncation of the above.
+        TileMxNxK{1, 8, 1}, // Truncation of the above.
     };
   }
   // Fallback - no architecture-optimized tile size for this case.
@@ -448,6 +448,7 @@ enumerateMatmulTileMxNxK(IREE::Encoding::EncodingAttr encoding,
 static FailureOr<MaterializeEncodingInfo>
 materializeEncodingForTarget(RankedTensorType tensorType,
                              IREE::HAL::ExecutableTargetAttr targetAttr) {
+
   auto encoding =
       dyn_cast_or_null<IREE::Encoding::EncodingAttr>(tensorType.getEncoding());
   if (!encoding) {

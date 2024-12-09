@@ -49,6 +49,7 @@ iree_bitcode_library(
         "mmt4d_riscv_64_base.c",
         ],
     arch = "riscv_64",
+    copts = ["-march=rv64gcv"],
     internal_hdrs = UKERNEL_RISCV_64_INTERNAL_HEADERS,
 )
 
