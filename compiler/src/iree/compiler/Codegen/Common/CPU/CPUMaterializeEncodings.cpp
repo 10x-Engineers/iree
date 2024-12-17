@@ -90,14 +90,13 @@ enumerateMatmulTileRiscv32(IREE::HAL::ExecutableTargetAttr target) {
 // are handled by transposition in chooseMatmulTile.
 static SmallVector<TileMxNxK>
 enumerateMatmulTileRiscv64(IREE::HAL::ExecutableTargetAttr target) {
-  if (hasUkernel(target)) {
     return {
-        TileMxNxK{8, 8, 1}, // Some reasonable tile shape.
-        TileMxNxK{4, 8, 1}, // Truncation of the above.
-        TileMxNxK{2, 8, 1}, // Truncation of the above.
-        TileMxNxK{1, 8, 1}, // Truncation of the above.
+        // Tile sizes tuned for VLEN=256
+        TileMxNxK{7, 32, 1}, // Aim to use vfmacc, 100% register utilization.
+        TileMxNxK{4, 32, 1}, // Truncation of the above.
+        TileMxNxK{2, 32, 1}, // Truncation of the above.
+        TileMxNxK{1, 32, 1}, // Truncation of the above.
     };
-  }
   // Fallback - no architecture-optimized tile size for this case.
   return {};
 }
